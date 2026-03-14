@@ -14,11 +14,11 @@ Backend robusto para la gestión de planes nutricionales, cálculo dinámico de 
 
 ## 🛠️ Stack Tecnológico
 
-* **Lenguaje:** Java 17
-* **Framework:** Spring Boot 3
+* **Lenguaje:** Java 21
+* **Framework:** Spring Boot 4.0.3
 * **Persistencia:** Spring Data JPA / Hibernate
 * **Serialización:** Jackson
-* **Base de Datos:** H2 (Desarrollo) / Soporta PostgreSQL/MySQL
+* **Base de Datos:** PostgreSQL
 
 ## 📊 Ejemplo de Respuesta (Perfil de Usuario)
 
