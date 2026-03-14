@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nutriplan-db
+    environment:
+      POSTGRES_USER: nutriuser
+      POSTGRES_PASSWORD: nutripassword
+      POSTGRES_DB: nutriplan_db
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: nutriplan-cache
+    ports:
+      - "6379:6379"
