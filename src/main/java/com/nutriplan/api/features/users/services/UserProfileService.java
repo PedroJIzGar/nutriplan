@@ -100,26 +100,21 @@ public class UserProfileService {
     }
 
     @Transactional
-    public UserProfile registerNewWeight(WeightRequest request, String userId) {
-        // 1. Buscamos el perfil por el ID de Supabase (userId)
+    public UserProfile registerNewWeight(WeightRequest request, String userIdStr) {
+        // 1. Convertir el String que viene del token a UUID
+        UUID userId = UUID.fromString(userIdStr);
+
+        // 2. Ahora ya puedes llamar al repositorio que espera un UUID
         UserProfile profile = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado para el usuario: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado para el ID: " + userIdStr));
 
-        // 2. Actualizamos el peso actual en el perfil
+        // 3. Continuar con la lógica...
         profile.setWeight(request.getWeight());
-
-        // 3. Recalculamos los macros (Esto es clave, ya que al cambiar el peso, cambian
-        // las Kcal)
         calculateNutrition(profile);
 
-        // 4. Guardamos el nuevo registro en el historial (WeightLog)
-        WeightLog newLog = new WeightLog();
-        newLog.setUser(profile);
-        newLog.setWeight(request.getWeight());
-        newLog.setLogDate(LocalDateTime.now());
-        weightLogRepository.save(newLog);
+        // Guardar el log (asegúrate de que WeightLog también use tipos coherentes)
+        saveWeightLog(profile, request.getWeight());
 
-        // 5. Persistimos el perfil actualizado
         return userRepository.save(profile);
     }
 

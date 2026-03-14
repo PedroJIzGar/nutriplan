@@ -10,6 +10,6 @@ import com.nutriplan.api.features.users.domain.UserProfile;
 @Repository
 public interface UserProfileRepository extends JpaRepository<UserProfile, java.util.UUID> {
     
-    Optional<UserProfile> findByUserId(String userId);
+    Optional<UserProfile> findByUserId(java.util.UUID userId);
     boolean existsByEmail(String email);
 }
