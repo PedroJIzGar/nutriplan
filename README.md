@@ -1,6 +1,6 @@
 # 🍎 NutriPlan API - Smart Nutrition Engine
 
-Backend robusto para la gestión de planes nutricionales, cálculo dinámico de macronutrientes y seguimiento de peso corporal. Desarrollado con **Java 17** y **Spring Boot 3.x**.
+Backend robusto para la gestión de planes nutricionales, cálculo dinámico de macronutrientes y seguimiento de peso corporal. Desarrollado con **Java 21** y **Spring Boot 4.0.3**.
 
 ## 🚀 Funcionalidades Principales
 
