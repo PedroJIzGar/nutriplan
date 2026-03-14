@@ -11,6 +11,7 @@ import com.nutriplan.api.features.users.domain.WeightLog;
 import com.nutriplan.api.features.users.domain.repository.UserProfileRepository;
 import com.nutriplan.api.features.users.domain.repository.WeightLogRepository;
 import com.nutriplan.api.features.users.dto.CreateProfileRequest;
+import com.nutriplan.api.features.users.dto.WeightRequest;
 import com.nutriplan.api.shared.exception.ResourceNotFoundException;
 import com.nutriplan.api.shared.utils.SecurityUtils;
 
@@ -96,6 +97,30 @@ public class UserProfileService {
             throw new ResourceNotFoundException("No se puede eliminar un perfil inexistente");
         }
         userRepository.deleteById(userId);
+    }
+
+    @Transactional
+    public UserProfile registerNewWeight(WeightRequest request, String userId) {
+        // 1. Buscamos el perfil por el ID de Supabase (userId)
+        UserProfile profile = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado para el usuario: " + userId));
+
+        // 2. Actualizamos el peso actual en el perfil
+        profile.setWeight(request.getWeight());
+
+        // 3. Recalculamos los macros (Esto es clave, ya que al cambiar el peso, cambian
+        // las Kcal)
+        calculateNutrition(profile);
+
+        // 4. Guardamos el nuevo registro en el historial (WeightLog)
+        WeightLog newLog = new WeightLog();
+        newLog.setUser(profile);
+        newLog.setWeight(request.getWeight());
+        newLog.setLogDate(LocalDateTime.now());
+        weightLogRepository.save(newLog);
+
+        // 5. Persistimos el perfil actualizado
+        return userRepository.save(profile);
     }
 
     private void calculateNutrition(UserProfile profile) {

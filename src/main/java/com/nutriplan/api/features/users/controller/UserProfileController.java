@@ -3,10 +3,13 @@ package com.nutriplan.api.features.users.controller;
 import com.nutriplan.api.features.users.domain.UserProfile;
 import com.nutriplan.api.features.users.services.UserProfileService;
 import com.nutriplan.api.features.users.dto.CreateProfileRequest;
+import com.nutriplan.api.features.users.dto.WeightRequest;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -49,5 +52,17 @@ public class UserProfileController {
     public ResponseEntity<Void> deleteProfile() {
         profileService.deleteProfile();
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/me/weights")
+    public ResponseEntity<UserProfile> addWeight(
+            @Valid @RequestBody WeightRequest request,
+            JwtAuthenticationToken token) {
+
+        // Extraemos el sub (ID de Supabase) del token
+        String userId = token.getName();
+
+        UserProfile updatedProfile = profileService.registerNewWeight(request, userId);
+        return ResponseEntity.ok(updatedProfile);
     }
 }
