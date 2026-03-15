@@ -11,6 +11,7 @@ import com.nutriplan.api.features.users.domain.WeightLog;
 import com.nutriplan.api.features.users.domain.repository.UserProfileRepository;
 import com.nutriplan.api.features.users.domain.repository.WeightLogRepository;
 import com.nutriplan.api.features.users.dto.CreateProfileRequest;
+import com.nutriplan.api.features.users.dto.UpdateProfileRequest;
 import com.nutriplan.api.features.users.dto.WeightRequest;
 import com.nutriplan.api.shared.exception.ResourceNotFoundException;
 import com.nutriplan.api.shared.utils.SecurityUtils;
@@ -68,25 +69,30 @@ public class UserProfileService {
 
     // --- UPDATE ---
     @Transactional
-    public UserProfile updateProfile(CreateProfileRequest request) { // Podrías usar un UpdateDTO específico
+    public UserProfile updateProfile(UpdateProfileRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
+        String email = SecurityUtils.getCurrentUserEmail();
+
         UserProfile profile = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Perfil no existe"));
 
-        if (!profile.getWeight().equals(request.getWeight())) {
+        boolean weightChanged = Double.compare(profile.getWeight(), request.getWeight()) != 0;
+
+        if (weightChanged) {
             saveWeightLog(profile, request.getWeight());
         }
-        // Actualizamos campos
+
         profile.setFirstName(request.getFirstName());
         profile.setLastName(request.getLastName());
+        profile.setEmail(email); // Se sincroniza desde Supabase/JWT
         profile.setAge(request.getAge());
         profile.setWeight(request.getWeight());
         profile.setHeight(request.getHeight());
         profile.setActivityLevel(request.getActivityLevel());
         profile.setGoal(request.getGoal());
-        // Al actualizar, usa mejor calculateNutrition para que se actualicen también
-        // los MACROS
+
         calculateNutrition(profile);
+
         return userRepository.save(profile);
     }
 

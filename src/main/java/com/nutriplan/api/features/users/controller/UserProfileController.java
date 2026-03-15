@@ -3,6 +3,7 @@ package com.nutriplan.api.features.users.controller;
 import com.nutriplan.api.features.users.domain.UserProfile;
 import com.nutriplan.api.features.users.services.UserProfileService;
 import com.nutriplan.api.features.users.dto.CreateProfileRequest;
+import com.nutriplan.api.features.users.dto.UpdateProfileRequest;
 import com.nutriplan.api.features.users.dto.WeightRequest;
 
 import jakarta.validation.Valid;
@@ -41,7 +42,7 @@ public class UserProfileController {
      * Recalcula automáticamente macros y guarda histórico de peso si cambia.
      */
     @PutMapping("/me")
-    public ResponseEntity<UserProfile> updateProfile(@Valid @RequestBody CreateProfileRequest request) {
+    public ResponseEntity<UserProfile> updateProfile(@Valid @RequestBody UpdateProfileRequest request) {
         return ResponseEntity.ok(profileService.updateProfile(request));
     }
 
