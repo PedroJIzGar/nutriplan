@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -56,14 +55,8 @@ public class UserProfileController {
     }
 
     @PostMapping("/me/weights")
-    public ResponseEntity<UserProfile> addWeight(
-            @Valid @RequestBody WeightRequest request,
-            JwtAuthenticationToken token) {
-
-        // Extraemos el sub (ID de Supabase) del token
-        String userId = token.getName();
-
-        UserProfile updatedProfile = profileService.registerNewWeight(request, userId);
+    public ResponseEntity<UserProfile> addWeight(@Valid @RequestBody WeightRequest request) {
+        UserProfile updatedProfile = profileService.registerNewWeight(request);
         return ResponseEntity.ok(updatedProfile);
     }
 }

@@ -114,20 +114,19 @@ public class UserProfileService {
     }
 
     @Transactional
-    public UserProfile registerNewWeight(WeightRequest request, String userIdStr) {
-        // 1. Convertir el String que viene del token a UUID
-        UUID userId = UUID.fromString(userIdStr);
+    public UserProfile registerNewWeight(WeightRequest request) {
+        UUID userId = SecurityUtils.getCurrentUserId();
 
-        // 2. Ahora ya puedes llamar al repositorio que espera un UUID
-        UserProfile profile = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Perfil no encontrado para el ID: " + userIdStr));
+        UserProfile profile = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Perfil no existe"));
 
-        // 3. Continuar con la lógica...
-        profile.setWeight(request.getWeight());
-        calculateNutrition(profile);
+        boolean weightChanged = Double.compare(profile.getWeight(), request.getWeight()) != 0;
 
-        // Guardar el log (asegúrate de que WeightLog también use tipos coherentes)
-        saveWeightLog(profile, request.getWeight());
+        if (weightChanged) {
+            saveWeightLog(profile, request.getWeight());
+            profile.setWeight(request.getWeight());
+            calculateNutrition(profile);
+        }
 
         return userRepository.save(profile);
     }
