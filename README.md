@@ -1,207 +1,43 @@
-
-# 🥗 NutriPlan API
-
-[![Java 21](https://img.shields.io/badge/Java-21-orange?style=flat)](#)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-Backend-6DB33F?style=flat)](#)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791?style=flat)](#)
-[![Flyway](https://img.shields.io/badge/Flyway-Migrations-CC0200?style=flat)](#)
-[![Redis](https://img.shields.io/badge/Redis-Cache-D82C20?style=flat)](#)
-[![JWT Auth](https://img.shields.io/badge/JWT-Supabase%20Auth-3ECF8E?style=flat)](#)
-[![Tests](https://img.shields.io/badge/Tests-MockMvc-blue?style=flat)](#)
-
-> Backend para una aplicación de gestión nutricional centrada en el usuario: perfil, objetivos calóricos, macronutrientes y seguimiento del peso.
-
----
-
-## ✨ Qué es NutriPlan
-
-**NutriPlan API** es el backend de una aplicación pensada para ayudar al usuario a entender mejor sus necesidades nutricionales y hacer seguimiento de su evolución física de forma estructurada.
-
-El sistema permite:
-
-- crear y gestionar el perfil del usuario autenticado
-- calcular calorías objetivo según su contexto
-- distribuir macronutrientes automáticamente
-- registrar el peso a lo largo del tiempo
-- mantener la lógica de negocio protegida y validada
-
-No es solo una API de formulario y base de datos: la idea es construir una base sólida para una futura app nutricional real, con una arquitectura limpia y preparada para crecer.
-
----
-## 🚀 Funcionalidades actuales
-
-### 👤 Perfil del usuario
-- creación del perfil nutricional
-- consulta del perfil autenticado
-- actualización del perfil
-- eliminación del perfil
-
-### 🔥 Cálculo nutricional
-- cálculo automático de calorías objetivo
-- distribución de macronutrientes
-- ajuste según actividad y objetivo del usuario
-
-### ⚖️ Seguimiento del peso
-- registro de nuevos pesajes
-- histórico asociado al usuario
-- recálculo automático cuando cambia el peso
-
-### 🔐 Seguridad
-- autenticación mediante **JWT**
-- integración con **Supabase**
-- endpoints privados protegidos
-- identidad del usuario obtenida desde el token, no desde el body
-
-### ✅ Calidad de API
-- validación de datos de entrada
-- manejo consistente de errores
-- respuestas HTTP coherentes
-- tests de seguridad y validación
-
----
-
-## 🧠 Qué calcula la API
-
-A partir de los datos del usuario, el sistema calcula:
-
-- **calorías objetivo**
-- **proteínas**
-- **grasas**
-- **carbohidratos**
-
-La lógica actual está pensada como una primera base funcional y puede evolucionar en futuras iteraciones para incorporar reglas más avanzadas, planificación de comidas y control de ingestas.
-
----
-
-## 🏗️ Stack tecnológico
-
-### Backend
-- **Java 21**
-- **Spring Boot**
-- **Spring Web**
-- **Spring Data JPA**
-- **Spring Security**
-- **OAuth2 Resource Server**
-
-### Persistencia e infraestructura
-- **PostgreSQL**
-- **Flyway**
-- **Redis**
-- **Docker Compose**
-
-### Calidad y desarrollo
-- **Maven**
-- **Bean Validation**
-- **JUnit / MockMvc**
-- **Tests de seguridad y validación**
-
----
-
-## 🔒 Seguridad
-
-La API utiliza autenticación basada en **JWT** emitidos por **Supabase**.
-
-Esto permite:
-
-- proteger los endpoints privados
-- identificar al usuario autenticado de forma segura
-- evitar confiar en datos sensibles enviados desde el cliente
-- centralizar la identidad del usuario en el token (`sub`, `email`, etc.)
-
----
-
-## 📦 Estructura del proyecto
-
-```text
-nutriplan/
-├── src/
-│   ├── main/
-│   └── test/
-├── docker-compose.yml
-├── pom.xml
-├── mvnw
-├── mvnw.cmd
-└── README.md
-```
----
-
-## 🛠️ Puesta en marcha
-
-### Requisitos previos
-
-Necesitas tener instalado:
-
-- **Java 21**
-- **Docker**
-- **Docker Compose**
-- **Maven** o usar el wrapper incluido
-
-### 1. Clonar el repositorio
-
-```bash
-git clone https://github.com/PedroJIzGar/nutriplan.git
-cd nutriplan
-```
-
-### 2. Levantar la infraestructura
-```bash
-docker compose up -d
-```
-
-### 3. Ejecutar la aplicación
-```bash
-./mvnw spring-boot:run
-```
-
----
-
-## 📚 Endpoints actuales
-
-### Perfil
-
-- `POST /api/v1/profiles`
-- `GET /api/v1/profiles/me`
-- `PUT /api/v1/profiles/me`
-- `DELETE /api/v1/profiles/me`
-
-### Peso
-
-- `POST /api/v1/profiles/me/weights`
-
----
-
-## 🧪 Estado actual
-
-Ahora mismo el proyecto cubre la base funcional del dominio de usuario:
-
-- autenticación
-- perfil nutricional
-- cálculo de objetivos
-- seguimiento de peso
-- validaciones
-- manejo de errores
-- seguridad probada con tests
-
-La siguiente evolución natural del proyecto es añadir la capa funcional de alimentación, comidas e ingestas, para que la aplicación pase de calcular objetivos a ayudar también en su cumplimiento.
-
----
-
-## 🎯 Objetivo del proyecto
-
-NutriPlan no busca quedarse en un backend de demostración.  
-La idea es construir una base realista, bien organizada y mantenible sobre la que seguir desarrollando una aplicación nutricional completa.
-
----
-
-## 📌 Estado del desarrollo
-
-Proyecto en desarrollo activo.
-
----
-
-## 👨‍💻 Autor
-
-Desarrollado por **PedroJIzGar**.
-
-
-
+# 🍎 NutriPlan API - Smart Nutrition Engine
+
+Backend robusto para la gestión de planes nutricionales, cálculo dinámico de macronutrientes y seguimiento de peso corporal. Desarrollado con **Java 21** y **Spring Boot 4.0.3**.
+
+## 🚀 Funcionalidades Principales
+
+* **Perfil Antropométrico:** Gestión completa de datos del usuario (edad, altura, peso, actividad).
+* **Cálculo Automático de Macros:** * **Calorías ($TDEE$):** Ajustadas según el nivel de actividad y el objetivo (`LOSE_WEIGHT`, `MAINTAIN`, `GAIN_MUSCLE`).
+    * **Proteínas:** Calculadas a $2.0\text{g/kg}$ de peso corporal.
+    * **Grasas:** Calculadas a $1.0\text{g/kg}$ de peso corporal.
+    * **Carbohidratos:** Ajuste dinámico del resto de calorías disponibles.
+* **Seguimiento de Peso:** Historial de pesajes (`WeightLogs`) con relación bidireccional optimizada.
+* **Arquitectura Anti-Recursión:** Implementación de `@JsonManagedReference` y `@JsonBackReference` para garantizar JSONs limpios y eficientes.
+
+## 🛠️ Stack Tecnológico
+
+* **Lenguaje:** Java 21
+* **Framework:** Spring Boot 4.0.3
+* **Persistencia:** Spring Data JPA / Hibernate
+* **Serialización:** Jackson
+* **Base de Datos:** PostgreSQL
+
+## 📊 Ejemplo de Respuesta (Perfil de Usuario)
+
+El sistema devuelve un objeto consolidado listo para el frontend, evitando redundancias:
+
+```json
+{
+  "userId": "0b342ef5-eec7-4e9a-ad21-45815544b9a8",
+  "firstName": "Pedro",
+  "targetKcal": 1962,
+  "targetProtein": 150,
+  "targetCarbs": 171,
+  "targetFat": 75,
+  "weightLogs": [
+    {
+      "id": "da800ee1-9483-42b9-b113-e1053135b2bd",
+      "weight": 75.0,
+      "logDate": "2026-03-14T21:36:26"
+    }
+  ],
+  "configured": true
+}

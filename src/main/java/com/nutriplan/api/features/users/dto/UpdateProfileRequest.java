@@ -17,27 +17,28 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class UpdateProfileRequest {
-    @NotBlank(message = "First name is required")
-        String firstName;
 
-        @NotBlank(message = "Last name is required")
-        String lastName;
+    @NotBlank(message = "El nombre es obligatorio")
+    private String firstName;
 
-        @NotNull(message = "Age is required")
-        @Min(value = 1, message = "Age must be greater than 0")
-        Integer age;
+    @NotBlank(message = "El apellido es obligatorio")
+    private String lastName;
 
-        @NotNull(message = "Weight is required")
-        @Positive(message = "Weight must be greater than 0")
-        Double weight;
+    @NotNull(message = "La edad es obligatoria")
+    @Min(value = 1, message = "La edad debe ser mayor que 0")
+    private Integer age;
 
-        @NotNull(message = "Height is required")
-        @Positive(message = "Height must be greater than 0")
-        Double height;
+    @NotNull(message = "El peso es obligatorio")
+    @Positive(message = "El peso debe ser mayor que 0")
+    private Double weight;
 
-        @NotNull(message = "Activity level is required")
-        ActivityLevel activityLevel;
+    @NotNull(message = "La altura es obligatoria")
+    @Positive(message = "La altura debe ser mayor que 0")
+    private Double height;
 
-        @NotNull(message = "Goal is required")
-        Goal goal;
+    @NotNull(message = "El nivel de actividad es obligatorio")
+    private ActivityLevel activityLevel;
+
+    @NotNull(message = "El objetivo es obligatorio")
+    private Goal goal;
 }
