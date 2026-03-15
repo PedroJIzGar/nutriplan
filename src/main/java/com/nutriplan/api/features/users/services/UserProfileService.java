@@ -122,6 +122,10 @@ public class UserProfileService {
 
         boolean weightChanged = Double.compare(profile.getWeight(), request.getWeight()) != 0;
 
+        if (!weightChanged) {
+            return profile;
+        }
+        
         if (weightChanged) {
             saveWeightLog(profile, request.getWeight());
             profile.setWeight(request.getWeight());
