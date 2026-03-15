@@ -79,6 +79,7 @@ public class UserProfile {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<WeightLog> weightLogs;
+    
     @Builder.Default
     private boolean isConfigured = false; // Nuevo campo para indicar si el perfil está configurado
 
