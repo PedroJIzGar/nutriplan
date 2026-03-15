@@ -13,6 +13,7 @@ import com.nutriplan.api.features.users.domain.repository.WeightLogRepository;
 import com.nutriplan.api.features.users.dto.CreateProfileRequest;
 import com.nutriplan.api.features.users.dto.UpdateProfileRequest;
 import com.nutriplan.api.features.users.dto.WeightRequest;
+import com.nutriplan.api.shared.exception.ConflictException;
 import com.nutriplan.api.shared.exception.ResourceNotFoundException;
 import com.nutriplan.api.shared.utils.SecurityUtils;
 
@@ -27,7 +28,6 @@ public class UserProfileService {
 
     @Transactional
     public UserProfile createProfile(CreateProfileRequest request) {
-        // 1. Validación de Edad (Feature: Seguridad/Política)
         if (request.getAge() < 18) {
             throw new IllegalArgumentException("Debes ser mayor de 18 años para usar la app.");
         }
@@ -35,7 +35,14 @@ public class UserProfileService {
         UUID userId = SecurityUtils.getCurrentUserId();
         String email = SecurityUtils.getCurrentUserEmail();
 
-        // 2. Mapeo inicial
+        if (userRepository.existsById(userId)) {
+            throw new ConflictException("El perfil del usuario ya existe");
+        }
+
+        if (userRepository.existsByEmailIgnoreCase(email)) {
+            throw new ConflictException("Ya existe un perfil asociado a ese email");
+        }
+
         UserProfile profile = UserProfile.builder()
                 .userId(userId)
                 .email(email)
@@ -47,13 +54,13 @@ public class UserProfileService {
                 .weight(request.getWeight())
                 .activityLevel(request.getActivityLevel())
                 .goal(request.getGoal())
-                .isConfigured(true) // Ya tiene los datos básicos
+                .isConfigured(true)
                 .build();
 
-        // 3. Cálculo de Nutrición Completo
         calculateNutrition(profile);
+
         UserProfile savedProfile = userRepository.save(profile);
-        // 4. Guardar Historial de Peso (Feature: Histórico)
+
         saveWeightLog(savedProfile, request.getWeight());
 
         return savedProfile;

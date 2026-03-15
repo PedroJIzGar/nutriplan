@@ -9,7 +9,7 @@ import com.nutriplan.api.features.users.domain.UserProfile;
 
 @Repository
 public interface UserProfileRepository extends JpaRepository<UserProfile, java.util.UUID> {
-    
+    boolean existsByEmailIgnoreCase(String email);
     Optional<UserProfile> findByUserId(java.util.UUID userId);
     boolean existsByEmail(String email);
 }
