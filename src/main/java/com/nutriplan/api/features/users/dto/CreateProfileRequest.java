@@ -3,7 +3,6 @@ package com.nutriplan.api.features.users.dto;
 import com.nutriplan.api.features.users.domain.enums.ActivityLevel;
 import com.nutriplan.api.features.users.domain.enums.Goal;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,10 +21,6 @@ public class CreateProfileRequest {
 
     @NotBlank(message = "El apellido es obligatorio")
     private String lastName;
-
-    @NotBlank
-    @Email(message = "Formato de email inválido")
-    private String email;
 
     @NotNull
     @Min(1)

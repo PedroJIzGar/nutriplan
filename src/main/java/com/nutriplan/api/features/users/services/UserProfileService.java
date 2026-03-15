@@ -32,11 +32,12 @@ public class UserProfileService {
         }
 
         UUID userId = SecurityUtils.getCurrentUserId();
+        String email = SecurityUtils.getCurrentUserEmail();
 
         // 2. Mapeo inicial
         UserProfile profile = UserProfile.builder()
                 .userId(userId)
-                .email(request.getEmail())
+                .email(email)
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .age(request.getAge())
