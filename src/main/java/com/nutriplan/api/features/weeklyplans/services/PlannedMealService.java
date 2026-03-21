@@ -3,6 +3,7 @@ package com.nutriplan.api.features.weeklyplans.services;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PlannedMealService {
+
+        private static final String DUPLICATE_SLOT_MESSAGE = "A planned meal already exists for this day and meal type";
 
         private final PlannedMealRepository plannedMealRepository;
         private final WeeklyPlanRepository weeklyPlanRepository;
@@ -56,7 +59,7 @@ public class PlannedMealService {
                                 request.getMealType());
 
                 if (slotAlreadyUsed) {
-                        throw new ConflictException("A planned meal already exists for this day and meal type");
+                        throw new ConflictException(DUPLICATE_SLOT_MESSAGE);
                 }
 
                 PlannedMeal plannedMeal = PlannedMeal.builder()
@@ -66,7 +69,12 @@ public class PlannedMealService {
                                 .mealType(request.getMealType())
                                 .build();
 
-                return plannedMealMapper.toResponse(plannedMealRepository.save(plannedMeal));
+                try {
+                        PlannedMeal savedPlannedMeal = plannedMealRepository.save(plannedMeal);
+                        return plannedMealMapper.toResponse(savedPlannedMeal);
+                } catch (DataIntegrityViolationException ex) {
+                        throw new ConflictException(DUPLICATE_SLOT_MESSAGE);
+                }
         }
 
         public List<PlannedMealResponse> getMealsByPlanId(UUID planId) {
