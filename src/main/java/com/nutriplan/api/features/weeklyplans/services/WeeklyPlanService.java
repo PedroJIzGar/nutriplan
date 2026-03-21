@@ -2,7 +2,6 @@ package com.nutriplan.api.features.weeklyplans.services;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,14 +10,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nutriplan.api.features.weeklyplans.domain.WeeklyPlan;
 import com.nutriplan.api.features.weeklyplans.domain.repository.WeeklyPlanRepository;
-import com.nutriplan.api.features.weeklyplans.dto.PlannedMealResponse;
 import com.nutriplan.api.features.weeklyplans.dto.CreateWeeklyPlanRequest;
+import com.nutriplan.api.features.weeklyplans.dto.PlannedMealResponse;
 import com.nutriplan.api.features.weeklyplans.dto.WeeklyPlanDetailResponse;
 import com.nutriplan.api.features.weeklyplans.dto.WeeklyPlanResponse;
 import com.nutriplan.api.features.weeklyplans.mapper.PlannedMealMapper;
 import com.nutriplan.api.features.weeklyplans.mapper.WeeklyPlanMapper;
+import com.nutriplan.api.shared.exception.BadRequestException;
 import com.nutriplan.api.shared.exception.ConflictException;
 import com.nutriplan.api.shared.exception.ResourceNotFoundException;
+import com.nutriplan.api.shared.security.CurrentUserProfileGuard;
 import com.nutriplan.api.shared.utils.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -31,11 +32,13 @@ public class WeeklyPlanService {
     private final WeeklyPlanRepository weeklyPlanRepository;
     private final WeeklyPlanMapper weeklyPlanMapper;
     private final PlannedMealMapper plannedMealMapper;
+    private final CurrentUserProfileGuard currentUserProfileGuard;
 
     @Transactional
     public WeeklyPlanResponse create(CreateWeeklyPlanRequest request) {
         UUID userId = SecurityUtils.getCurrentUserId();
 
+        currentUserProfileGuard.ensureExists(userId);
         validateStartDateIsStartOfWeek(request.getStartDate());
 
         if (weeklyPlanRepository.existsByUserIdAndStartDate(userId, request.getStartDate())) {
@@ -55,10 +58,8 @@ public class WeeklyPlanService {
 
     public List<WeeklyPlanResponse> getMyPlans() {
         UUID userId = SecurityUtils.getCurrentUserId();
-
-        List<WeeklyPlan> weeklyPlans = weeklyPlanRepository.findAllByUserIdOrderByStartDateDesc(userId);
-
-        return weeklyPlanMapper.toResponseList(weeklyPlans);
+        return weeklyPlanMapper.toResponseList(
+                weeklyPlanRepository.findAllByUserIdOrderByStartDateDesc(userId));
     }
 
     public WeeklyPlanDetailResponse getById(UUID planId) {
@@ -69,10 +70,6 @@ public class WeeklyPlanService {
 
         List<PlannedMealResponse> plannedMeals = weeklyPlan.getPlannedMeals()
                 .stream()
-                .sorted(Comparator
-                        .comparing((com.nutriplan.api.features.weeklyplans.domain.PlannedMeal pm) -> pm.getDayOfWeek()
-                                .getValue())
-                        .thenComparing(pm -> pm.getMealType().name()))
                 .map(plannedMealMapper::toResponse)
                 .toList();
 
@@ -87,7 +84,7 @@ public class WeeklyPlanService {
 
     private void validateStartDateIsStartOfWeek(LocalDate startDate) {
         if (startDate == null || !DayOfWeek.MONDAY.equals(startDate.getDayOfWeek())) {
-            throw new ConflictException("Start date must be a Monday");
+            throw new BadRequestException("Start date must be a Monday");
         }
     }
 }
