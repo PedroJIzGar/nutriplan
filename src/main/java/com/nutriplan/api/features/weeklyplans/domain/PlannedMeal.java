@@ -60,7 +60,7 @@ public class PlannedMeal {
     @PrePersist
     public void prePersist() {
         if (createdAt == null) {
-            createdAt = OffsetDateTime.now();
+            createdAt = OffsetDateTime.now(java.time.ZoneOffset.UTC);
         }
     }
 }

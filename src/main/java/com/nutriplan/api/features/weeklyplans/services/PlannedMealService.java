@@ -1,6 +1,5 @@
 package com.nutriplan.api.features.weeklyplans.services;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +15,7 @@ import com.nutriplan.api.features.weeklyplans.domain.repository.WeeklyPlanReposi
 import com.nutriplan.api.features.weeklyplans.dto.CreatePlannedMealRequest;
 import com.nutriplan.api.features.weeklyplans.dto.PlannedMealResponse;
 import com.nutriplan.api.features.weeklyplans.mapper.PlannedMealMapper;
+import com.nutriplan.api.shared.exception.BadRequestException;
 import com.nutriplan.api.shared.exception.ConflictException;
 import com.nutriplan.api.shared.exception.ResourceNotFoundException;
 import com.nutriplan.api.shared.utils.SecurityUtils;
@@ -27,54 +27,57 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class PlannedMealService {
 
-    private final PlannedMealRepository plannedMealRepository;
-    private final WeeklyPlanRepository weeklyPlanRepository;
-    private final RecipeRepository recipeRepository;
-    private final PlannedMealMapper plannedMealMapper;
+        private final PlannedMealRepository plannedMealRepository;
+        private final WeeklyPlanRepository weeklyPlanRepository;
+        private final RecipeRepository recipeRepository;
+        private final PlannedMealMapper plannedMealMapper;
 
-    @Transactional
-    public PlannedMealResponse addMeal(UUID planId, CreatePlannedMealRequest request) {
-        UUID userId = SecurityUtils.getCurrentUserId();
+        @Transactional
+        public PlannedMealResponse addMeal(UUID planId, CreatePlannedMealRequest request) {
+                UUID userId = SecurityUtils.getCurrentUserId();
 
-        WeeklyPlan weeklyPlan = weeklyPlanRepository.findByIdAndUserId(planId, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Weekly plan not found"));
+                WeeklyPlan weeklyPlan = weeklyPlanRepository.findByIdAndUserId(planId, userId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Weekly plan not found"));
 
-        Recipe recipe = recipeRepository.findById(request.getRecipeId())
-                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found"));
+                Recipe recipe = recipeRepository.findById(request.getRecipeId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found"));
 
-        boolean slotAlreadyUsed = plannedMealRepository.existsByWeeklyPlanIdAndDayOfWeekAndMealType(
-                weeklyPlan.getId(),
-                request.getDayOfWeek(),
-                request.getMealType());
+                if (!Boolean.TRUE.equals(recipe.getActive())) {
+                        throw new BadRequestException("Recipe is inactive");
+                }
 
-        if (slotAlreadyUsed) {
-            throw new ConflictException("A planned meal already exists for this day and meal type");
+                if (!recipe.getMealType().equals(request.getMealType())) {
+                        throw new BadRequestException("Recipe meal type does not match requested meal type");
+                }
+
+                boolean slotAlreadyUsed = plannedMealRepository.existsByWeeklyPlanIdAndDayOfWeekAndMealType(
+                                weeklyPlan.getId(),
+                                request.getDayOfWeek(),
+                                request.getMealType());
+
+                if (slotAlreadyUsed) {
+                        throw new ConflictException("A planned meal already exists for this day and meal type");
+                }
+
+                PlannedMeal plannedMeal = PlannedMeal.builder()
+                                .weeklyPlan(weeklyPlan)
+                                .recipe(recipe)
+                                .dayOfWeek(request.getDayOfWeek())
+                                .mealType(request.getMealType())
+                                .build();
+
+                return plannedMealMapper.toResponse(plannedMealRepository.save(plannedMeal));
         }
 
-        PlannedMeal plannedMeal = PlannedMeal.builder()
-                .weeklyPlan(weeklyPlan)
-                .recipe(recipe)
-                .dayOfWeek(request.getDayOfWeek())
-                .mealType(request.getMealType())
-                .build();
+        public List<PlannedMealResponse> getMealsByPlanId(UUID planId) {
+                UUID userId = SecurityUtils.getCurrentUserId();
 
-        PlannedMeal savedPlannedMeal = plannedMealRepository.save(plannedMeal);
+                WeeklyPlan weeklyPlan = weeklyPlanRepository.findByIdAndUserId(planId, userId)
+                                .orElseThrow(() -> new ResourceNotFoundException("Weekly plan not found"));
 
-        return plannedMealMapper.toResponse(savedPlannedMeal);
-    }
-
-    public List<PlannedMealResponse> getMealsByPlanId(UUID planId) {
-        UUID userId = SecurityUtils.getCurrentUserId();
-
-        WeeklyPlan weeklyPlan = weeklyPlanRepository.findByIdAndUserId(planId, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Weekly plan not found"));
-
-        return plannedMealRepository.findByWeeklyPlanIdOrderByDayOfWeekAscMealTypeAsc(weeklyPlan.getId())
-                .stream()
-                .sorted(Comparator
-                        .comparing((PlannedMeal pm) -> pm.getDayOfWeek().getValue())
-                        .thenComparing(pm -> pm.getMealType().name()))
-                .map(plannedMealMapper::toResponse)
-                .toList();
-    }
+                return plannedMealRepository.findByWeeklyPlanIdOrderByDayOfWeekAscMealTypeAsc(weeklyPlan.getId())
+                                .stream()
+                                .map(plannedMealMapper::toResponse)
+                                .toList();
+        }
 }
