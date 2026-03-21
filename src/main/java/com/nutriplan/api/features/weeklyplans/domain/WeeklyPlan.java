@@ -13,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -48,7 +47,6 @@ public class WeeklyPlan {
     private OffsetDateTime createdAt;
 
     @OneToMany(mappedBy = "weeklyPlan", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("dayOfWeek ASC, mealType ASC")
     @Builder.Default
     private List<PlannedMeal> plannedMeals = new ArrayList<>();
 

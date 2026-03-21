@@ -56,6 +56,13 @@ No es solo una API de formulario y base de datos: la idea es construir una base 
 > En la primera versión, las recetas forman parte de un catálogo por defecto gestionado por el sistema.  
 > No se permite su edición ni eliminación por parte del usuario.
 
+### Planificación semanal
+- creación de planes semanales para el usuario autenticado
+- consulta del listado de planes del usuario
+- consulta del detalle de un plan semanal
+- asignación de recetas a días y tipos de comida
+- validación de slots únicos por día y tipo de comida
+
 ### 🥦 Catálogo de ingredientes
 
 - consulta de ingredientes disponibles
@@ -196,11 +203,18 @@ docker compose up -d
 - `GET /api/v1/ingredients`
 - `GET /api/v1/ingredients/{ingredientId}`
 
+### Weekly Plans
+- `POST /api/v1/weekly-plans`
+- `GET /api/v1/weekly-plans`
+- `GET /api/v1/weekly-plans/{planId}`
+- `POST /api/v1/weekly-plans/{planId}/meals`
+- `GET /api/v1/weekly-plans/{planId}/meals`
+
 ---
 
 ## 🧪 Estado actual
 
-Ahora mismo el proyecto cubre la base funcional del dominio de usuario:
+Ahora mismo el proyecto cubre la base funcional del dominio de usuario y una primera capa de planificación nutricional:
 
 - autenticación
 - perfil nutricional
@@ -208,11 +222,12 @@ Ahora mismo el proyecto cubre la base funcional del dominio de usuario:
 - seguimiento de peso
 - catálogo base de recetas
 - catálogo base de ingredientes
-- validaciones
+- planificación semanal de comidas
+- validaciones de negocio
 - manejo de errores
 - seguridad probada con tests
 
-La siguiente evolución natural del proyecto es añadir la capa funcional de planificación alimentaria e ingestas, para que la aplicación pase de calcular objetivos y ofrecer recetas base a ayudar también en su ejecución diaria.
+La siguiente evolución natural del proyecto es ampliar la planificación con edición, eliminación, generación automática de planes, control de ingestas y seguimiento de cumplimiento.
 
 ---
 

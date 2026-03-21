@@ -1,5 +1,6 @@
 package com.nutriplan.api.core.exception;
 
+import com.nutriplan.api.shared.exception.BadRequestException;
 import com.nutriplan.api.shared.exception.ConflictException;
 import com.nutriplan.api.shared.exception.ResourceNotFoundException;
 import com.nutriplan.api.shared.exception.dto.ErrorResponse;
@@ -72,6 +73,20 @@ public class GlobalExceptionHandler {
 
         @ExceptionHandler(IllegalArgumentException.class)
         public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex,
+                        HttpServletRequest request) {
+                ErrorResponse error = ErrorResponse.builder()
+                                .status(HttpStatus.BAD_REQUEST.value())
+                                .error("Bad Request")
+                                .message(ex.getMessage())
+                                .path(request.getRequestURI())
+                                .build();
+
+                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        }
+
+        @ExceptionHandler(BadRequestException.class)
+        public ResponseEntity<ErrorResponse> handleBadRequest(
+                        BadRequestException ex,
                         HttpServletRequest request) {
                 ErrorResponse error = ErrorResponse.builder()
                                 .status(HttpStatus.BAD_REQUEST.value())
