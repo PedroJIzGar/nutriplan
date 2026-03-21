@@ -22,6 +22,7 @@ El sistema permite:
 - calcular calorías objetivo según su contexto
 - distribuir macronutrientes automáticamente
 - registrar el peso a lo largo del tiempo
+- consultar un catálogo base de recetas e ingredientes
 - mantener la lógica de negocio protegida y validada
 
 No es solo una API de formulario y base de datos: la idea es construir una base sólida para una futura app nutricional real, con una arquitectura limpia y preparada para crecer.
@@ -44,6 +45,22 @@ No es solo una API de formulario y base de datos: la idea es construir una base 
 - registro de nuevos pesajes
 - histórico asociado al usuario
 - recálculo automático cuando cambia el peso
+
+### 🍽️ Catálogo de recetas
+
+- consulta de recetas predefinidas del sistema
+- consulta del detalle de una receta
+- estructura de receta con ingredientes y cantidades
+- catálogo base preparado para usarlo en futuras planificaciones
+
+> En la primera versión, las recetas forman parte de un catálogo por defecto gestionado por el sistema.  
+> No se permite su edición ni eliminación por parte del usuario.
+
+### 🥦 Catálogo de ingredientes
+
+- consulta de ingredientes disponibles
+- catálogo reutilizable para recetas
+- base preparada para futuras funcionalidades de planificación e ingestas
 
 ### 🔐 Seguridad
 - autenticación mediante **JWT**
@@ -167,6 +184,18 @@ docker compose up -d
 
 - `POST /api/v1/profiles/me/weights`
 
+### Receta
+
+- `POST /api/v1/recipes`
+- `GET /api/v1/recipes`
+- `GET /api/v1/recipes/{recipeId}`
+
+### Ingredientes
+
+- `POST /api/v1/ingredients`
+- `GET /api/v1/ingredients`
+- `GET /api/v1/ingredients/{ingredientId}`
+
 ---
 
 ## 🧪 Estado actual
@@ -177,11 +206,13 @@ Ahora mismo el proyecto cubre la base funcional del dominio de usuario:
 - perfil nutricional
 - cálculo de objetivos
 - seguimiento de peso
+- catálogo base de recetas
+- catálogo base de ingredientes
 - validaciones
 - manejo de errores
 - seguridad probada con tests
 
-La siguiente evolución natural del proyecto es añadir la capa funcional de alimentación, comidas e ingestas, para que la aplicación pase de calcular objetivos a ayudar también en su cumplimiento.
+La siguiente evolución natural del proyecto es añadir la capa funcional de planificación alimentaria e ingestas, para que la aplicación pase de calcular objetivos y ofrecer recetas base a ayudar también en su ejecución diaria.
 
 ---
 
