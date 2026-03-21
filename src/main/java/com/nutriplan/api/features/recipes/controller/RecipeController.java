@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.nutriplan.api.features.recipes.dto.CreateRecipeRequest;
 import com.nutriplan.api.features.recipes.dto.RecipeResponse;
+import com.nutriplan.api.features.recipes.dto.RecipeSummaryResponse;
 import com.nutriplan.api.features.recipes.services.RecipeService;
 
 import jakarta.validation.Valid;
@@ -29,7 +30,7 @@ public class RecipeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RecipeResponse>> getAllRecipes() {
+    public ResponseEntity<List<RecipeSummaryResponse>> getAllRecipes() {
         return ResponseEntity.ok(recipeService.getAllRecipes());
     }
 

@@ -19,6 +19,7 @@ import com.nutriplan.api.features.recipes.domain.repository.RecipeRepository;
 import com.nutriplan.api.features.recipes.dto.CreateRecipeIngredientRequest;
 import com.nutriplan.api.features.recipes.dto.CreateRecipeRequest;
 import com.nutriplan.api.features.recipes.dto.RecipeResponse;
+import com.nutriplan.api.features.recipes.dto.RecipeSummaryResponse;
 import com.nutriplan.api.features.recipes.mapper.RecipeMapper;
 import com.nutriplan.api.shared.exception.ConflictException;
 import com.nutriplan.api.shared.exception.ResourceNotFoundException;
@@ -50,8 +51,8 @@ public class RecipeService {
     }
 
     @Transactional(readOnly = true)
-    public List<RecipeResponse> getAllRecipes() {
-        return recipeMapper.toResponseList(
+    public List<RecipeSummaryResponse> getAllRecipes() {
+        return recipeMapper.toSummaryResponseList(
                 recipeRepository.findAllByActiveTrueOrderByCreatedAtDesc());
     }
 
@@ -80,7 +81,7 @@ public class RecipeService {
 
     private Recipe buildRecipe(CreateRecipeRequest request) {
         return Recipe.builder()
-                .name(request.getName().trim())
+                .name(normalizeRequiredText(request.getName()))
                 .description(normalizeNullableText(request.getDescription()))
                 .mealType(request.getMealType())
                 .servings(request.getServings())
@@ -114,12 +115,16 @@ public class RecipeService {
         }
     }
 
+    private String normalizeRequiredText(String value) {
+        return value.trim().replaceAll("\\s+", " ");
+    }
+
     private String normalizeNullableText(String value) {
         if (value == null) {
             return null;
         }
 
-        String trimmedValue = value.trim();
+        String trimmedValue = value.trim().replaceAll("\\s+", " ");
         return trimmedValue.isEmpty() ? null : trimmedValue;
     }
 }
