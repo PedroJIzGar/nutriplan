@@ -5,6 +5,5 @@ public enum IngredientUnit {
     KILOGRAM,
     LITER,
     MILLILITER,
-    UNIT,
-    PIECE
+    UNIT
 }

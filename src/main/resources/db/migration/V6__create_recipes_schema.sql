@@ -3,9 +3,11 @@ CREATE TABLE ingredients (
     name VARCHAR(100) NOT NULL,
     default_unit VARCHAR(30) NOT NULL,
     category VARCHAR(30) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    CONSTRAINT uk_ingredient_name UNIQUE (name)
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
+
+CREATE UNIQUE INDEX uk_ingredient_name_lower
+    ON ingredients (LOWER(name));
 
 CREATE TABLE recipes (
     id UUID PRIMARY KEY,
@@ -18,8 +20,8 @@ CREATE TABLE recipes (
     carbs NUMERIC(10,2) NOT NULL CHECK (carbs >= 0),
     fat NUMERIC(10,2) NOT NULL CHECK (fat >= 0),
     prep_time_minutes INTEGER NOT NULL CHECK (prep_time_minutes > 0),
-    active BOOLEAN NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE recipe_ingredients (
